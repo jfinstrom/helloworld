@@ -1,0 +1,22 @@
+<module>
+	<rawname>helloworld</rawname>
+	<repo>unsupported</repo>
+	<name>Hello World</name>
+	<version>12.0.0.1</version>
+	<category>Development</category>
+	<Publisher>James Finstrom</Publisher>
+	<info>http://wiki.freepbx.org/pages/viewpage.action?pageId=19498386</info>
+	<licence>GPL</licence>
+	<licenselink>http://www.gnu.org/licenses/gpl-2.0.txt</licenselink>
+	<menuitems>
+		<helloworld>Hello World</helloworld>
+	</menuitems>
+	<depends>
+		<version>12</version>
+	</depends>
+	<supported>12.0</supported>
+	
+	<description>This is the Hello World module used to learn by example for BMO used in 12+</description>
+	<changelog>*12.0.0.1* Initial Dev Release</changelog>
+	
+</module>
