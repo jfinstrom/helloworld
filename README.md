@@ -42,14 +42,15 @@ This is th minimum methods allowed. There are other methods but these are mandit
  * public function backup() {}
  * public function restore($backup) {}
  * public function doConfigPageInit($page) {}
+
 ### install 
 replaces install.php
 ### uninstall 
-not currently implimented
+clean up after your self
 ### backup 
-generate a text string that can be used to restore
+FUTURE: generate an array that can be used to restore
 ### restore 
-this will be given the string you generated prior which you should parse and make things the way they were.
+FUTURE: this will be given the array you generated prior which you should parse and make things the way they were.
 ### doConfigPageInit
 Without this you will get an error. This will receive the page requested which you should act on accordingly.
 
