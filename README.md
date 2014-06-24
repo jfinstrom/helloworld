@@ -21,6 +21,8 @@ Structure
 	* js
 	* css
    * views
+
+
 rawname - Should be the name of your module
 assets - Contains your CSS and Java Script files in their respective folders.
 views - Contains the html page views. These files should not contain any logic.
