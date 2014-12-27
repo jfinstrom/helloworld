@@ -53,6 +53,7 @@ rawname/Rawname.class.php
 This is your primary class and is essentially your module. All the magic happens here.
 rawname/module.xml
 This is your module definition and is the same as previous FreePBX versions.
+rawname/rawname.page.php
 
 ## Rawname.class.php
 The standard here is first letter capitalized.
@@ -74,7 +75,7 @@ FUTURE: generate an array that can be used to restore
 ### restore 
 FUTURE: this will be given the array you generated prior which you should parse and make things the way they were.
 ### doConfigPageInit
-Without this you will get an error. This will receive the page requested which you should act on accordingly.
+Without this you will get an error. This will process $_REQUEST
 
 ## Functional notes
 PHP tends to poop it self in some cases if there is a "?>" followed by a empty newline. Do not use the closing ?>
