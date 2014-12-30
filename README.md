@@ -81,3 +81,5 @@ Without this you will get an error. This will process $_REQUEST
 PHP tends to poop it self in some cases if there is a "?>" followed by a empty newline. Do not use the closing ?>
 unless you are doing inline PHP or you may break something and have no idea why.
 
+## License
+ AGPLv3+
