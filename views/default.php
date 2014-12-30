@@ -28,8 +28,7 @@
 				</div>
 			</div>
 			<div class="col-sm-3 hidden-xs bootnav">
-				<?php show_view(__DIR__'/rnav.php') ?>
-			</div>
+				<?php show_view(__DIR__.'/rnav.php')?>
 		</div>
 	</div>
 </div>
