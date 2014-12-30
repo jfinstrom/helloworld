@@ -1,11 +1,11 @@
 helloworld
 ==========
 
-FreePBX Hello World with BMO for 12+
+FreePBX Hello World with BMO for 13+ though a lot of this will probably work on 12+
 
 Status
 ==========
-This is not a complete or working example. Consider this a scratchpad as I work it out.  Final version will be availible from the FreePBX git once I have a base working example
+This installs and shows a couple pages but doesn't do much else yet
 
 Scope
 ==========
@@ -17,7 +17,7 @@ It is not possible to both show everything and make this module useful as a lear
 - [x] Read from database
 - [ ] Write a conf file
 - [ ] Read a conf file
-- [ ] Display a page
+- [x] Display a page
 - [ ] Display a populated form
 - [ ] Handle a form submission
 - [ ] Write dial plan
