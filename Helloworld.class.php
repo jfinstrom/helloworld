@@ -1,28 +1,7 @@
 <?php
-/*
- * Copyright (c) 2014 "James Finstrom"
- * http://github.com/jfinstrom
- * 
- * This module was written for the FreePBX project at http://freepbx.org
- * 
- * This file is part of the helloworld FreePBX demo module
- * 
- * helloworld is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- * 
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
- 
-class Helloworld implements BMO {
-	//BMO Methods... These are required by BMO.
+namespace FreePBX\modules;
+
+class Helloworld implements \BMO {
 	public function __construct($freepbx = null) {
 		if ($freepbx == null) {
 			throw new Exception("Not given a FreePBX Object");
@@ -30,58 +9,53 @@ class Helloworld implements BMO {
 		$this->FreePBX = $freepbx;
 		$this->db = $freepbx->Database;
 	}
-	public function install() {
-		$db = $this->db;
-		$sql = 'CREATE TABLE `helloworld` (
-					`id` INT NOT NULL AUTO_INCREMENT,
-					`timestamp` TIMESTAMP,
-					`subject` TEXT,
-					`body` MEDIUMTEXT,
-					PRIMARY KEY  (`id`)
-				)  DEFAULT CHARACTER SET=utf8;';
-		out(_('Creating Database for Hello World'));
-		$q = $db->prepare($sql);
-		$ret = $q->execute();
-		if($ret){
-			out(_('Database Created'));
-		}else{
-			out(_('Database Creation Failed'));
-		}
-		unset($sql);
-		unset($q);
-	}
-	public function uninstall() {
-		
-	}
-	public function backup() {}
-	public function restore($backup) {}
-	public function doConfigPageInit($page) {
-		$this->request = $_REQUEST;
-		$request = $this->request;
-		$action = $request['action'];
-		switch($action){
-			case "add":
-				$this->addNote($request['subject'],$request['body']);
-				redirect_standard();
-			break;
-			case "del":
-				$this->delNote($request['id']);
-				redirect_standard();
-			break;
-			case "edit":
-				$this->editNote($request['id'], $request['subject'],$request['body']);
-				redirect_standard();
-			break;
-			
-		}
-		
-	}
-	//This is a built in BMO method but only for 13. Prior to 13 you add buttons in to the form. In 13+ we use the action bar (floating buttons).
+	//BMO Methods
+    public function install() {
+    	out(_('Creating the database table'));
+    	$result = $this->createTable();
+    	if($result === true){
+    		out(_('Table Created'));
+    	}else{
+    		out(_('Something went wrong'));
+    		out($result);
+    	}
+    }
+    public function uninstall() {
+    	out(_('Removing the database table'));
+    	$result = $this->deleteTable();
+    	if($result === true){
+    		out(_('Table Deleted'));
+    	}else{
+    		out(_('Something went wrong'));
+    		out($result);
+    	}
+    }
+    public function backup() {}
+    public function restore($backup) {}
+    public function doConfigPageInit($page) {
+    	$id = $_REQUEST['id']?$_REQUEST['id']:'';
+    	$action = $_REQUEST['action']?$_REQUEST['action']:'';
+    	$subject = $_REQUEST['subject']?$_REQUEST['subject']:'';
+    	$body = $_REQUEST['body']?$_REQUEST['body']:'';
+    	//Handle form submissions
+    	switch ($action) {
+    		case 'add':
+    			$id = $this->addItem($subject,$body);
+    			$_REQUEST['id'] = $id;
+    		break;
+    		case 'edit':
+    			$this->updateItem($id,$subject,$body);
+    		break;
+    		case 'delete':
+    			$this->deleteItem($id);
+    			unset($_REQUEST['action']);
+    			unset($_REQUEST['id']);
+    	} 	
+    }
 	public function getActionBar($request) {
 		$buttons = array();
-		switch($request['display']){
-			case "helloworld":
-				//Set the buttons for this module
+		switch($request['display']) {
+			case 'modulename':
 				$buttons = array(
 					'delete' => array(
 						'name' => 'delete',
@@ -99,66 +73,128 @@ class Helloworld implements BMO {
 						'value' => _('Submit')
 					)
 				);
-				//turn off Delete button on the "add" page
-				if($request['view'] == "add"){ 
+				if (empty($request['extdisplay'])) {
 					unset($buttons['delete']);
 				}
 			break;
 		}
+		return $buttons;
 	}
+	//Module getters
+	/**
+	 * getOne Gets an individual item by ID
+	 * @param  int $id Item ID
+	 * @return array Returns an associative array with id, subject and body.
+	 */
+	public function getOne($id){
+		$sql = "SELECT id,subject,body FROM helloworld WHERE id = :id";
+		$stmt = $this->db->prepare($sql);
+		$stmt->bindParam(':id',$id, \PDO::PARAM_INT);
+		$stmt->execute();
+		$row =$stmt->fetchObject();
+		return array(
+			'id' => $row->id,
+			'subject' => $row->subject,
+			'body' => $row->body 
+			);
+	}
+	/**
+	 * getList gets a list od subjects and their respective id.
+	 * @return array id => subject
+	 */
+	public function getList(){
+		$ret = array();
+		$sql = 'SELECT id,subject from helloworld';
+		foreach ($this->db->query($sql) as $row) {
+			$ret[$row['id']] = $row['subject'];
+		}
+		return $ret;
+	}
+	//Module setters
 	
-	//Module methods This is stuff you create and is not manditory
+	/**
+	 * addItem Add an Item
+	 * @param string $subject The Subject of the item
+	 * @param [type] $body    The body of the item
+	 */
+	public function addItem($subject,$body){
+		$sql = 'INSERT INTO helloworld (subject, body) VALUES (:subject, :body)';
+		$stmt = $this->db->prepare($sql);
+		$stmt->bindParam(':subject', $subject, \PDO::PARAM_STR);
+		$stmt->bindParam(':body', $body, \PDO::PARAM_STR);
+		$stmt->execute();
+		return $this->db->lastInsertId();
+	}
+	/**
+	 * updateItem Updates the given ID
+	 * @param  int $id      Item ID
+	 * @param  string $subject The new subject
+	 * @param  string $body    The new body
+	 * @return bool          Returns true on success or false on failure
+	 */
+	public function updateItem($id,$subject,$body){
+		$sql = 'UPDATE helloworld SET subject = :subject, body = :body WHERE id = :id';
+		$stmt = $this->db->prepare($sql);
+		$stmt->bindParam(':subject', $subject, \PDO::PARAM_STR);
+		$stmt->bindParam(':body', $body, \PDO::PARAM_STR);
+		$stmt->bindParam(':id', $id, \PDO::PARAM_INT);
+		return $stmt->execute();
+	}
+	/**
+	 * deleteItem Deletes the given ID
+	 * @param  int $id      Item ID
+	 * @return bool          Returns true on success or false on failure
+	 */
+	public function deleteItem($id){
+		$sql = 'DELETE FROM helloworld WHERE id = :id';
+		$stmt = $this->db->prepare($sql);
+		$stmt->bindParam(':id', $id, \PDO::PARAM_INT);
+		return $stmt->execute();
+	}
+	//Module General Methods
+	
+	//Install
+	private function createTable(){
+		$table = 'helloworld';
+
+		try{
+			$sql = "CREATE TABLE IF NOT EXISTS $table(
+				id INT(11) AUTO_INCREMENT PRIMARY KEY,
+				subject VARCHAR(60),
+				body TEXT;";
+			return $this->db->execute($sql);
+		} catch(PDOException $e) {
+			return $e->getMessage();
+		}
+	}
+	//Uninstall
+	private function deleteTable(){
+		$table = 'helloworld';
+
+		try{
+			$sql = "DROP $table;";
+			return $this->db->execute($sql);
+		} catch(PDOException $e) {
+			return $e->getMessage();
+		}
+	}
+	//View
 	public function showPage(){
-		$view = $this->request['view'];
-		switch($view){
-			case add:
-				show_view(__DIR__.'/views/addForm.php');
-			break;
-			case edit:
-			break;
-			case view:
+		switch ($_REQUEST['view']) {
+			case 'form':
+				if(isset($_REQUEST['id'] && !empty($_REQUEST['id'])){
+					$subhead = _('Edit Item');
+					$content = load_view(__DIR__.'/views/form.php', $this->getOne($_REQUEST['id']));					
+				}else{
+					$subhead = _('Add Item');
+					$content = load_view(__DIR__.'/views/form.php');										
+				}
 			break;
 			default:
-				show_view(__DIR__.'/views/default.php', $this->listNotes());
+				$subhead = _('Item List');
+				$content = load_view(__DIR__.'/views/grid.php');
 			break;
 		}
-	}
-	public function listNotes(){
-		$db = $this->db;
-		$sql = 'SELECT * FROM helloworld ORDER BY timestamp DESC;';
-		$q = $db->prepare($sql);
-		if($q->execute()){
-			return $q->fetchAll();
-		}else{
-			return false; 
-		}
-	}
-	public function getNote($id){
-		$db = $this->db;
-		$sql = 'SELECT * FROM helloworld WHERE id = ?;';
-		$q = $db->prepare($sql);
-		$ret = $q->execute(array($id));
-		return $ret->fetchAll();
-	}
-	public function addNote($subject,$body){
-		$db = $this->db;
-		$sql = 'INSERT INTO helloworld (subject,body) VALUES (?,?)';
-		$q = $db->prepare($sql);
-		$ret = $q->execute(array($subject,$body));
-		return $ret;
-	}
-	public function editNote($id,$subject,$body){
-		$db = $this->db;
-		$sql = 'UPDATE helloworld SET subject = ?, body = ? WHERE id = ?';
-		$q = $db->prepare($sql);
-		$ret = $q->execute(array($subject,$body, $id));	
-		return $ret;
-	}
-	public function delNote($id){
-		$db = $this->db;
-		$sql = 'DELETE FROM helloworld WHERE id = ?';
-		$q = $db->prepare($sql);
-		$ret = $q->execute(array($id));	
-		return $ret;
+		 echo load_view(__DIR__.'/views/default.php', array('subhead' => $subhead, 'content' => $content));
 	}
 }

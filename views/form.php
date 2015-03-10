@@ -1,39 +1,50 @@
-<?php
-
-echo <<< HERE
-<form class="form-horizontal" method = 'POST'>
-	<input type = 'hidden' name='display' value='helloworld'/>
-	<input type = 'hidden' name='action' value='edit'/>
-	<fieldset>
-		<legend>Settings</legend>
-		<div class="control-group">
-			<label class="control-label" for="hwstring">Hello String</label>
-			<div class="controls">
-				<input id="hwstring" name="hwstring" placeholder="placeholder" class="input-medium" type="text">
-				<p class="help-block">The hello world string</p>
+<!--Subject-->
+<div class="element-container">
+	<div class="row">
+		<div class="col-md-12">
+			<div class="row">
+				<div class="form-group">
+					<div class="col-md-3">
+						<label class="control-label" for="subject"><?php echo _("Subject") ?></label>
+						<i class="fa fa-question-circle fpbx-help-icon" data-for="subject"></i>
+					</div>
+					<div class="col-md-9">
+						<input type="text" class="form-control" id="subject" name="subject" value="<?php echo $subject?>">
+					</div>
+				</div>
 			</div>
 		</div>
-		<div class="control-group">
-			<label class="control-label" for="foo">Foo Value</label>
-			<div class="controls">
-				<input id="foo" name="foo" placeholder="placeholder" class="input-small" type="text">
-				<p class="help-block">Value of foo</p>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<span id="subject-help" class="help-block fpbx-help-block"><?php echo _("Enter a subject for your note")?></span>
+		</div>
+	</div>
+</div>
+<!--END Subject-->
+<!--Body-->
+<div class="element-container">
+	<div class="row">
+		<div class="col-md-12">
+			<div class="row">
+				<div class="form-group">
+					<div class="col-md-3">
+						<label class="control-label" for="body"><?php echo _("Body") ?></label>
+						<i class="fa fa-question-circle fpbx-help-icon" data-for="body"></i>
+					</div>
+					<div class="col-md-9">
+						<textarea class="form-control" id="body" name="body">
+							<?php echo $body?>
+						</textarea>
+					</div>
+				</div>
 			</div>
 		</div>
-		<div class="control-group">
-			<label class="control-label" for="bar">Bar Value</label>
-			<div class="controls">
-				<input id="bar" name="bar" placeholder="placeholder" class="input-small" type="text">
-				<p class="help-block">Value of bar</p>
-			</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<span id="body-help" class="help-block fpbx-help-block"><?php echo _("Enter the contents of your note")?></span>
 		</div>
-		<div class="control-group">
-			<label class="control-label" for="submit"></label>
-			<div class="controls">
-				<button id="submit" name="submit" class="btn btn-default">Submit</button>
-			</div>
-		</div>
-	</fieldset>
-</form>
-
-HERE;
+	</div>
+</div>
+<!--END Body-->
