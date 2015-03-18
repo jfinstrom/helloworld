@@ -87,8 +87,11 @@ class Helloworld implements \BMO {
 						'value' => _('Submit')
 					)
 				);
-				if (empty($request['extdisplay'])) {
+				if (empty($request['id'])) {
 					unset($buttons['delete']);
+				}
+				if (empty($request['view'])){
+					unset($buttons);
 				}
 			break;
 		}
@@ -145,9 +148,9 @@ class Helloworld implements \BMO {
 	 */
 	public function getList(){
 		$ret = array();
-		$sql = 'SELECT id,subject from helloworld';
+		$sql = 'SELECT id,subject,body from helloworld';
 		foreach ($this->db->query($sql) as $row) {
-			$ret[$row['id']] = $row['subject'];
+			$ret[] = array('id' => $row['id'],'subject' => $row['subject']);
 		}
 		return $ret;
 	}

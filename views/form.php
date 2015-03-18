@@ -1,4 +1,5 @@
-<form action="" method="post" class="fpbx-submit" id="hwform" name="hwform" data-fpbx-delete="">
+<form action="" method="post" class="fpbx-submit" id="hwform" name="hwform" data-fpbx-delete="config.php?display=helloworld&action=delete&id=<?php echo $id?>">
+<input type="hidden" name='action' value="<?php echo $id?'edit':'add' ?>">
 <!--Subject-->
 <div class="element-container">
 	<div class="row">
