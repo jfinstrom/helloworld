@@ -1,3 +1,4 @@
+<form action="" method="post" class="fpbx-submit" id="hwform" name="hwform" data-fpbx-delete="">
 <!--Subject-->
 <div class="element-container">
 	<div class="row">
@@ -33,8 +34,7 @@
 						<i class="fa fa-question-circle fpbx-help-icon" data-for="body"></i>
 					</div>
 					<div class="col-md-9">
-						<textarea class="form-control" id="body" name="body">
-							<?php echo $body?>
+						<textarea class="form-control" id="body" name="body"><?php echo $body?>
 						</textarea>
 					</div>
 				</div>
@@ -48,3 +48,4 @@
 	</div>
 </div>
 <!--END Body-->
+</form>

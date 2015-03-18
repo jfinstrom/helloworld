@@ -1,15 +1,22 @@
 <?php
+//All module classes should be namespaced
 namespace FreePBX\modules;
+//This setting is for AJAX calls. We want calls to be authenticates and so not want cross origin calls
+$setting = array('authenticate' => true, 'allowremote' => false);
 
+//The class name should match the file name with an upercase first letter
 class Helloworld implements \BMO {
 	public function __construct($freepbx = null) {
 		if ($freepbx == null) {
 			throw new Exception("Not given a FreePBX Object");
 		}
 		$this->FreePBX = $freepbx;
+		//This is only needed for database stuff. If you are not doing database stuff you don't need this
 		$this->db = $freepbx->Database;
 	}
 	//BMO Methods
+	
+	//Required: Called during module install
     public function install() {
     	out(_('Creating the database table'));
     	$result = $this->createTable();
@@ -20,6 +27,7 @@ class Helloworld implements \BMO {
     		out($result);
     	}
     }
+    //Required: Called during module uninstall
     public function uninstall() {
     	out(_('Removing the database table'));
     	$result = $this->deleteTable();
@@ -30,8 +38,11 @@ class Helloworld implements \BMO {
     		out($result);
     	}
     }
+    //Required: Can be empty, not yet used
     public function backup() {}
+    //Required: Can be empty, not yet used
     public function restore($backup) {}
+    //Required Processes $_REQUEST stuff
     public function doConfigPageInit($page) {
     	$id = $_REQUEST['id']?$_REQUEST['id']:'';
     	$action = $_REQUEST['action']?$_REQUEST['action']:'';
@@ -39,6 +50,7 @@ class Helloworld implements \BMO {
     	$body = $_REQUEST['body']?$_REQUEST['body']:'';
     	//Handle form submissions
     	switch ($action) {
+
     		case 'add':
     			$id = $this->addItem($subject,$body);
     			$_REQUEST['id'] = $id;
@@ -50,12 +62,14 @@ class Helloworld implements \BMO {
     			$this->deleteItem($id);
     			unset($_REQUEST['action']);
     			unset($_REQUEST['id']);
+    		break;
     	} 	
     }
+    //Optional: Add buttons to your page(s) Buttons dhould not be added in html
 	public function getActionBar($request) {
 		$buttons = array();
 		switch($request['display']) {
-			case 'modulename':
+			case 'helloworld':
 				$buttons = array(
 					'delete' => array(
 						'name' => 'delete',
@@ -80,6 +94,33 @@ class Helloworld implements \BMO {
 		}
 		return $buttons;
 	}
+	//Optional: Ajax stuff
+	public function ajaxRequest($req, &$setting) {
+		//The ajax request
+		if ($req == "getJSON") {
+			//Tell BMO This command is valid. If you are doing a lot of actions use a switch
+			return true;
+		}else{
+			//Deny everything else
+			return false;
+		}	
+	}
+	//This handles the AJAX via ajax.php?module=helloworld&command=getJSON&jdata=grid
+	public function ajaxHandler() {
+		if($_REQUEST['command'] == 'getJSON'){
+			switch ($_REQUEST['jdata']) {
+				case 'grid':
+					return $this->getList();
+				break;
+				
+				default:
+					print json_encode(_("Invalid Request"));
+				break;
+			}
+		}
+	}
+
+
 	//Module getters
 	/**
 	 * getOne Gets an individual item by ID
@@ -182,7 +223,7 @@ class Helloworld implements \BMO {
 	public function showPage(){
 		switch ($_REQUEST['view']) {
 			case 'form':
-				if(isset($_REQUEST['id'] && !empty($_REQUEST['id'])){
+				if(isset($_REQUEST['id']) && !empty($_REQUEST['id'])){
 					$subhead = _('Edit Item');
 					$content = load_view(__DIR__.'/views/form.php', $this->getOne($_REQUEST['id']));					
 				}else{
