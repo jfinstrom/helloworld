@@ -65,10 +65,12 @@ class Helloworld implements \BMO {
     		break;
     	} 	
     }
-    //Optional: Add buttons to your page(s) Buttons dhould not be added in html
+    //Optional: Add buttons to your page(s) Buttons should not be added in html. Note this is a 13+ method.
+    //Prior to 13 you add the button to the html.
 	public function getActionBar($request) {
 		$buttons = array();
 		switch($request['display']) {
+			//this is usually your module's rawname
 			case 'helloworld':
 				$buttons = array(
 					'delete' => array(
@@ -87,9 +89,11 @@ class Helloworld implements \BMO {
 						'value' => _('Submit')
 					)
 				);
+				//We hide the delete button if we are not editing an item. "id" should be whatever your unique element is.
 				if (empty($request['id'])) {
 					unset($buttons['delete']);
 				}
+				//If we are not in the form view lets 86 the buttons
 				if (empty($request['view'])){
 					unset($buttons);
 				}
@@ -98,6 +102,8 @@ class Helloworld implements \BMO {
 		return $buttons;
 	}
 	//Optional: Ajax stuff
+	
+	//This method declares valid ajax commands...
 	public function ajaxRequest($req, &$setting) {
 		//The ajax request
 		if ($req == "getJSON") {
@@ -124,7 +130,7 @@ class Helloworld implements \BMO {
 	}
 
 
-	//Module getters
+	//Module getters These are all custom methods
 	/**
 	 * getOne Gets an individual item by ID
 	 * @param  int $id Item ID
@@ -154,7 +160,7 @@ class Helloworld implements \BMO {
 		}
 		return $ret;
 	}
-	//Module setters
+	//Module setters these are all custom methods.
 	
 	/**
 	 * addItem Add an Item
@@ -222,7 +228,7 @@ class Helloworld implements \BMO {
 			return $e->getMessage();
 		}
 	}
-	//View
+	//View called by page.helloworld.php
 	public function showPage(){
 		switch ($_REQUEST['view']) {
 			case 'form':
