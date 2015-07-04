@@ -209,21 +209,26 @@ class Helloworld implements \BMO {
 
 		try{
 			$sql = "CREATE TABLE IF NOT EXISTS $table(
-				id INT(11) AUTO_INCREMENT PRIMARY KEY,
-				subject VARCHAR(60),
-				body TEXT;";
-			return $this->db->execute($sql);
+				`id` INT(11) AUTO_INCREMENT PRIMARY KEY,
+				`subject` VARCHAR(60),
+				`body` TEXT);";
+			$sth = $this->db->prepare($sql);
+			return $sth->execute();
+
 		} catch(PDOException $e) {
 			return $e->getMessage();
 		}
+		return;
 	}
 	//Uninstall
 	private function deleteTable(){
 		$table = 'helloworld';
 
 		try{
-			$sql = "DROP $table;";
-			return $this->db->execute($sql);
+			$sql = "DROP TABLE IF EXISTS $table;";
+			$sth = $this->db->prepare($sql);
+			return $sth->execute();
+
 		} catch(PDOException $e) {
 			return $e->getMessage();
 		}
