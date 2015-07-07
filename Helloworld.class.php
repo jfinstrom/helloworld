@@ -1,10 +1,11 @@
 <?php
 //All module classes should be namespaced
 namespace FreePBX\modules;
-//This setting is for AJAX calls. We want calls to be authenticates and so not want cross origin calls
+
+//This setting is for AJAX calls. We want calls to be authenticated and so don't want cross origin calls
 $setting = array('authenticate' => true, 'allowremote' => false);
 
-//The class name should match the file name with an upercase first letter
+//The class name should match the file name with an upper-case first letter
 class Helloworld implements \BMO {
 	public function __construct($freepbx = null) {
 		if ($freepbx == null) {
@@ -17,56 +18,63 @@ class Helloworld implements \BMO {
 	//BMO Methods
 	
 	//Required: Called during module install
-    public function install() {
-    	out(_('Creating the database table'));
-    	$result = $this->createTable();
-    	if($result === true){
-    		out(_('Table Created'));
-    	}else{
-    		out(_('Something went wrong'));
-    		out($result);
-    	}
-    }
-    //Required: Called during module uninstall
-    public function uninstall() {
-    	out(_('Removing the database table'));
-    	$result = $this->deleteTable();
-    	if($result === true){
-    		out(_('Table Deleted'));
-    	}else{
-    		out(_('Something went wrong'));
-    		out($result);
-    	}
-    }
-    //Required: Can be empty, not yet used
-    public function backup() {}
-    //Required: Can be empty, not yet used
-    public function restore($backup) {}
-    //Required Processes $_REQUEST stuff
-    public function doConfigPageInit($page) {
-    	$id = $_REQUEST['id']?$_REQUEST['id']:'';
-    	$action = $_REQUEST['action']?$_REQUEST['action']:'';
-    	$subject = $_REQUEST['subject']?$_REQUEST['subject']:'';
-    	$body = $_REQUEST['body']?$_REQUEST['body']:'';
-    	//Handle form submissions
-    	switch ($action) {
+	public function install() {
+		out(_('Creating the database table'));
+		$result = $this->createTable();
+		if($result === true){
+			out(_('Table Created'));
+		}else{
+			out(_('Something went wrong'));
+			out($result);
+		}
 
-    		case 'add':
-    			$id = $this->addItem($subject,$body);
-    			$_REQUEST['id'] = $id;
-    		break;
-    		case 'edit':
-    			$this->updateItem($id,$subject,$body);
-    		break;
-    		case 'delete':
-    			$this->deleteItem($id);
-    			unset($_REQUEST['action']);
-    			unset($_REQUEST['id']);
-    		break;
-    	} 	
-    }
-    //Optional: Add buttons to your page(s) Buttons should not be added in html. Note this is a 13+ method.
-    //Prior to 13 you add the button to the html.
+		// Register FeatureCode
+		$fcc = new \featurecode('helloworld', 'helloworld');
+		$fcc->setDescription('Hello World Welcome Message');
+		$fcc->setDefault('*43556');  // default is set to *-H-E-L-L-O
+		$fcc->update();
+		unset($fcc);
+	}
+	//Required: Called during module uninstall
+	public function uninstall() {
+		out(_('Removing the database table'));
+		$result = $this->deleteTable();
+		if($result === true){
+			out(_('Table Deleted'));
+		}else{
+			out(_('Something went wrong'));
+			out($result);
+		}
+	}
+	//Required: Can be empty, not yet used
+	public function backup() {}
+	//Required: Can be empty, not yet used
+	public function restore($backup) {}
+	//Required Processes $_REQUEST stuff
+	public function doConfigPageInit($page) {
+		$id = $_REQUEST['id']?$_REQUEST['id']:'';
+		$action = $_REQUEST['action']?$_REQUEST['action']:'';
+		$subject = $_REQUEST['subject']?$_REQUEST['subject']:'';
+		$body = $_REQUEST['body']?$_REQUEST['body']:'';
+		//Handle form submissions
+		switch ($action) {
+
+			case 'add':
+				$id = $this->addItem($subject,$body);
+				$_REQUEST['id'] = $id;
+			break;
+			case 'edit':
+				$this->updateItem($id,$subject,$body);
+			break;
+			case 'delete':
+				$this->deleteItem($id);
+				unset($_REQUEST['action']);
+				unset($_REQUEST['id']);
+			break;
+		} 	
+	}
+	//Optional: Add buttons to your page(s) Buttons should not be added in html. Note this is a 13+ method.
+	//Prior to 13 you add the button to the html.
 	public function getActionBar($request) {
 		$buttons = array();
 		switch($request['display']) {
@@ -201,6 +209,38 @@ class Helloworld implements \BMO {
 		$stmt->bindParam(':id', $id, \PDO::PARAM_INT);
 		return $stmt->execute();
 	}
+
+
+	// Dialplan Methods
+	
+	// This method required, what is is used for?
+	Public function myDialplanHooks(){
+		return true;
+	}
+
+	// Method 'doDialplanHook' used to generate Asterisk dialplan
+	public function doDialplanHook(&$ext, $engine, $priority){
+		$modulename = 'helloworld';
+
+		// Retrieve module's feature code
+		$fcc = new \featurecode($modulename, 'helloworld');
+		$hw_fc = $fcc->getCodeActive();
+		unset($fcc);
+
+		$id = 'app-helloworld';
+		$ext->addInclude('from-internal-additional', $id); // Add the include to from-internal
+		$ext->add($id, $hw_fc, '', new \ext_goto('1', 's', 'app-helloworld-playback'));  // feature code goes to playback context
+
+		$id = 'app-helloworld-playback';
+		$c = 's';
+		$ext->add($id, $c, 'label', new \ext_answer());
+		$ext->add($id, $c, '', new \ext_wait(1));
+		$ext->add($id, $c, '', new \ext_playback('hello-world'));
+		$ext->add($id, $c, '', new \ext_playback('demo-congrats'));
+		$ext->add($id, $c, 'hangup', new \ext_hangup());
+
+	}
+
 	//Module General Methods
 	
 	//Install
@@ -209,21 +249,26 @@ class Helloworld implements \BMO {
 
 		try{
 			$sql = "CREATE TABLE IF NOT EXISTS $table(
-				id INT(11) AUTO_INCREMENT PRIMARY KEY,
-				subject VARCHAR(60),
-				body TEXT;";
-			return $this->db->execute($sql);
+				`id` INT(11) AUTO_INCREMENT PRIMARY KEY,
+				`subject` VARCHAR(60),
+				`body` TEXT);";
+			$sth = $this->db->prepare($sql);
+			return $sth->execute();
+
 		} catch(PDOException $e) {
 			return $e->getMessage();
 		}
+		return;
 	}
 	//Uninstall
 	private function deleteTable(){
 		$table = 'helloworld';
 
 		try{
-			$sql = "DROP $table;";
-			return $this->db->execute($sql);
+			$sql = "DROP TABLE IF EXISTS $table;";
+			$sth = $this->db->prepare($sql);
+			return $sth->execute();
+
 		} catch(PDOException $e) {
 			return $e->getMessage();
 		}
@@ -234,10 +279,10 @@ class Helloworld implements \BMO {
 			case 'form':
 				if(isset($_REQUEST['id']) && !empty($_REQUEST['id'])){
 					$subhead = _('Edit Item');
-					$content = load_view(__DIR__.'/views/form.php', $this->getOne($_REQUEST['id']));					
+					$content = load_view(__DIR__.'/views/form.php', $this->getOne($_REQUEST['id']));
 				}else{
 					$subhead = _('Add Item');
-					$content = load_view(__DIR__.'/views/form.php');										
+					$content = load_view(__DIR__.'/views/form.php');
 				}
 			break;
 			default:
