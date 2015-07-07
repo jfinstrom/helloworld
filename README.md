@@ -26,7 +26,6 @@ It is not possible to both show everything and make this module useful as a lear
 The UCP module will have it's own scope and read me file. It is not the primary focus of this example so it may or may not be included here. 
 
 TODO:
-- Make this thing generate a dialplan.
 - Hook in to pages.
 - Make this thing create/edit a conf file.
 - Comment and Clarify things.

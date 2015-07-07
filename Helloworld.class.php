@@ -2,7 +2,7 @@
 //All module classes should be namespaced
 namespace FreePBX\modules;
 
-//This setting is for AJAX calls. We want calls to be authenticated and so not want cross origin calls
+//This setting is for AJAX calls. We want calls to be authenticated and so don't want cross origin calls
 $setting = array('authenticate' => true, 'allowremote' => false);
 
 //The class name should match the file name with an upper-case first letter
@@ -28,7 +28,7 @@ class Helloworld implements \BMO {
 			out($result);
 		}
 
-		// Register FeatureCode - Create Welcome message
+		// Register FeatureCode
 		$fcc = new \featurecode('helloworld', 'helloworld');
 		$fcc->setDescription('Hello World Welcome Message');
 		$fcc->setDefault('*43556');  // default is set to *-H-E-L-L-O
@@ -252,7 +252,6 @@ class Helloworld implements \BMO {
 				`id` INT(11) AUTO_INCREMENT PRIMARY KEY,
 				`subject` VARCHAR(60),
 				`body` TEXT);";
-//			return $this->db->execute($sql);
 			$sth = $this->db->prepare($sql);
 			return $sth->execute();
 
@@ -267,9 +266,8 @@ class Helloworld implements \BMO {
 
 		try{
 			$sql = "DROP TABLE IF EXISTS $table;";
-//			return $this->db->execute($sql);
-$sth = $this->db->prepare($sql);
-return $sth->execute();
+			$sth = $this->db->prepare($sql);
+			return $sth->execute();
 
 		} catch(PDOException $e) {
 			return $e->getMessage();
@@ -281,10 +279,10 @@ return $sth->execute();
 			case 'form':
 				if(isset($_REQUEST['id']) && !empty($_REQUEST['id'])){
 					$subhead = _('Edit Item');
-					$content = load_view(__DIR__.'/views/form.php', $this->getOne($_REQUEST['id']));					
+					$content = load_view(__DIR__.'/views/form.php', $this->getOne($_REQUEST['id']));
 				}else{
 					$subhead = _('Add Item');
-					$content = load_view(__DIR__.'/views/form.php');										
+					$content = load_view(__DIR__.'/views/form.php');
 				}
 			break;
 			default:
