@@ -16,36 +16,6 @@ class Helloworld implements \BMO {
 		$this->db = $freepbx->Database;
 	}
 	//BMO Methods
-	
-	//Required: Called during module install
-	public function install() {
-		out(_('Creating the database table'));
-		$result = $this->createTable();
-		if($result === true){
-			out(_('Table Created'));
-		}else{
-			out(_('Something went wrong'));
-			out($result);
-		}
-
-		// Register FeatureCode
-		$fcc = new \featurecode('helloworld', 'helloworld');
-		$fcc->setDescription('Hello World Welcome Message');
-		$fcc->setDefault('*43556');  // default is set to *-H-E-L-L-O
-		$fcc->update();
-		unset($fcc);
-	}
-	//Required: Called during module uninstall
-	public function uninstall() {
-		out(_('Removing the database table'));
-		$result = $this->deleteTable();
-		if($result === true){
-			out(_('Table Deleted'));
-		}else{
-			out(_('Something went wrong'));
-			out($result);
-		}
-	}
 	//Required: Can be empty, not yet used
 	public function backup() {}
 	//Required: Can be empty, not yet used
@@ -71,7 +41,7 @@ class Helloworld implements \BMO {
 				unset($_REQUEST['action']);
 				unset($_REQUEST['id']);
 			break;
-		} 	
+		}
 	}
 	//Optional: Add buttons to your page(s) Buttons should not be added in html. Note this is a 13+ method.
 	//Prior to 13 you add the button to the html.
@@ -110,7 +80,7 @@ class Helloworld implements \BMO {
 		return $buttons;
 	}
 	//Optional: Ajax stuff
-	
+
 	//This method declares valid ajax commands...
 	public function ajaxRequest($req, &$setting) {
 		//The ajax request
@@ -120,7 +90,7 @@ class Helloworld implements \BMO {
 		}else{
 			//Deny everything else
 			return false;
-		}	
+		}
 	}
 	//This handles the AJAX via ajax.php?module=helloworld&command=getJSON&jdata=grid
 	public function ajaxHandler() {
@@ -129,7 +99,7 @@ class Helloworld implements \BMO {
 				case 'grid':
 					return $this->getList();
 				break;
-				
+
 				default:
 					print json_encode(_("Invalid Request"));
 				break;
@@ -153,7 +123,7 @@ class Helloworld implements \BMO {
 		return array(
 			'id' => $row->id,
 			'subject' => $row->subject,
-			'body' => $row->body 
+			'body' => $row->body
 			);
 	}
 	/**
@@ -169,7 +139,7 @@ class Helloworld implements \BMO {
 		return $ret;
 	}
 	//Module setters these are all custom methods.
-	
+
 	/**
 	 * addItem Add an Item
 	 * @param string $subject The Subject of the item
@@ -212,7 +182,7 @@ class Helloworld implements \BMO {
 
 
 	// Dialplan Methods
-	
+
 	// This method required, what is is used for?
 	Public function myDialplanHooks(){
 		return true;
@@ -242,37 +212,7 @@ class Helloworld implements \BMO {
 	}
 
 	//Module General Methods
-	
-	//Install
-	private function createTable(){
-		$table = 'helloworld';
 
-		try{
-			$sql = "CREATE TABLE IF NOT EXISTS $table(
-				`id` INT(11) AUTO_INCREMENT PRIMARY KEY,
-				`subject` VARCHAR(60),
-				`body` TEXT);";
-			$sth = $this->db->prepare($sql);
-			return $sth->execute();
-
-		} catch(PDOException $e) {
-			return $e->getMessage();
-		}
-		return;
-	}
-	//Uninstall
-	private function deleteTable(){
-		$table = 'helloworld';
-
-		try{
-			$sql = "DROP TABLE IF EXISTS $table;";
-			$sth = $this->db->prepare($sql);
-			return $sth->execute();
-
-		} catch(PDOException $e) {
-			return $e->getMessage();
-		}
-	}
 	//View called by page.helloworld.php
 	public function showPage(){
 		switch ($_REQUEST['view']) {
