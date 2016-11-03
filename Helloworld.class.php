@@ -16,6 +16,10 @@ class Helloworld implements \BMO {
 		$this->db = $freepbx->Database;
 	}
 	//BMO Methods
+	//use this OR install.php but probably not both
+	public function install(){}
+	//use this OR uninstall.php but probably not both
+	public function uninstall(){}
 	//Required: Can be empty, not yet used
 	public function backup() {}
 	//Required: Can be empty, not yet used
