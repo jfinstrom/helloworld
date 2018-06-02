@@ -2,7 +2,7 @@
 	<rawname>helloworld</rawname>
 	<repo>unsupported</repo>
 	<name>Hello World</name>
-	<version>12.0.0.1</version>
+	<version>14.0.1</version>
 	<category>Development</category>
 	<Publisher>James Finstrom</Publisher>
 	<info>http://wiki.freepbx.org/pages/viewpage.action?pageId=19498386</info>
@@ -17,6 +17,8 @@
 	<supported>12.0</supported>
 	
 	<description>This is the Hello World module used to learn by example for BMO used in 12+</description>
-	<changelog>*12.0.0.1* Initial Dev Release</changelog>
-	
+	<changelog>
+		*14.0.1* Code cleanup and some php 5.6 syntax
+		*12.0.0.1* Initial Dev Release
+	</changelog>
 </module>
