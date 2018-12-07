@@ -32,7 +32,7 @@ TODO:
 
 Structure
 ==========
-##Folder tree
+## Folder tree
 
  * rawname
   * assets
@@ -54,7 +54,7 @@ views - Contains the html page views. These files should generally not contain a
 
 UCP - Optional adds a module for the user control pannel. Has the same directory structure. 
 
-##Files
+## Files
 rawname/Rawname.class.php
 This is your primary class and is essentially your module. All the magic happens here.
 rawname/module.xml
