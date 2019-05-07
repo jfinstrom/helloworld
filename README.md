@@ -1,13 +1,12 @@
 helloworld
 ==========
 
-FreePBX Hello World with BMO for 13+ though a lot of this will probably work on 12+
+FreePBX Hello World with BMO for 15+ though a lot of this will probably work on 12-14 This has removed some deprecated methods
 
 Status
 ==========
 This is a functioning module that manages notes. It installs and all that jazz on FreePBX 13. It takes advantage of
-some 13 only stuff such as action buttons that won't show up in 12, and a dynamic grid that won't populate in 12.
-
+some 15 only stuff such as backup and restore
 Scope
 ==========
 
@@ -44,6 +43,9 @@ Structure
 	* js
 	* css
    * views
+   * Api
+     * Rest
+     * Graphql
 
 
 rawname - Should be the name of your module
@@ -53,6 +55,8 @@ assets - Contains your CSS and Java Script files in their respective folders.
 views - Contains the html page views. These files should generally not contain any logic.
 
 UCP - Optional adds a module for the user control pannel. Has the same directory structure. 
+
+Api - 15+
 
 ##Files
 rawname/Rawname.class.php
