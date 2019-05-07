@@ -28,19 +28,6 @@ class Helloworld extends FreePBX_Helpers implements BMO {
 	public function uninstall(){}
 	
 	/**
-	 * Unused, Removed in 15.0
-	 *
-	 * @return void
-	 */
-	public function backup() {}
-
-	/**
-	 * Unused, Removed in 15.0
-	 * @return void
-	 */
-	public function restore($backup) {}
-	
-	/**
 	 * Processes form submission and pre-page actions.
 	 *
 	 * @param string $page Display name
