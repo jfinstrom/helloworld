@@ -12,9 +12,9 @@
 		<helloworld>Hello World</helloworld>
 	</menuitems>
 	<depends>
-		<version>12</version>
+		<version>14</version>
 	</depends>
-	<supported>12.0</supported>
+	<supported>14.0</supported>
 	
 	<description>This is the Hello World module used to learn by example for BMO used in 12+</description>
 	<changelog>
