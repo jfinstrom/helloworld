@@ -1,0 +1,15 @@
+{
+  "recommendations": [
+    "felixfbecker.php-intellisense",
+    "felixfbecker.php-pack",
+    "felixfbecker.php-debug",
+    "neilbrayfield.php-docblocker",
+    "esbenp.prettier-vscode",
+    "eamodio.gitlens",
+    "mgmcdermott.vscode-language-babel",
+    "dbaeumer.vscode-eslint",
+    "ms-vscode.vscode-typescript-tslint-plugin",
+    "pflannery.vscode-versionlens",
+    "ms-vsliveshare.vsliveshare-pack"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+	// ssh root@<server>
+	// cd ~/.vscode-server/extensions/esbenp.prettier-vscode-1.9.0/
+	// npm install @prettier/plugin-php
+	// I recommend to disable VS Code's built-in PHP IntelliSense by setting php.suggest.basic to false to avoid duplicate suggestions.
+	"php.suggest.basic": false,
+	"[php]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	// These are all my auto-save configs
+	"editor.formatOnSave": true,
+	// turn it off for JS and JSX, we will do this via eslint
+	"[javascript]": {
+		"editor.formatOnSave": false
+	},
+	"[javascriptreact]": {
+		"editor.formatOnSave": false
+	},
+	// tell the ESLint plugin to run on save
+	"eslint.autoFixOnSave": true,
+	// Optional BUT IMPORTANT: If you have the prettier extension enabled for other languages like CSS and HTML, turn it off for JS since we are doing it through Eslint already
+	"prettier.disableLanguages": [
+		"javascript",
+		"typescript",
+		"javascriptreact",
+		"typescriptreact"
+	],
+	"emmet.triggerExpansionOnTab": true,
+	"files.associations": {
+		"*.jsx": "javascriptreact"
+	},
+	"intelephense.diagnostics.undefinedTypes": false,
+	"intelephense.diagnostics.undefinedFunctions": false,
+	"intelephense.diagnostics.undefinedConstants": false,
+	"intelephense.diagnostics.undefinedClassConstants": false,
+	"intelephense.diagnostics.undefinedMethods": false,
+	"intelephense.diagnostics.undefinedProperties": false,
+	"editor.codeActionsOnSave": {
+		"source.fixAll.eslint": true
+	}
+}

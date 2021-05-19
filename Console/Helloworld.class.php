@@ -8,18 +8,31 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 //Start class. Class name should be same as file name. Classname.class.php
-class Helloworld extends Command {
+class Helloworld extends Command
+{
 	//Declare component and your options.
-	protected function configure(){
+	protected function configure()
+	{
 		$this->setName('helloworld')
-		->setDescription('This says hello to the world')
-		->setDefinition(array(
-			new InputOption('flag', 'f', InputOption::VALUE_NONE, 'We are setting a flag'),
-			new InputArgument('args', InputArgument::IS_ARRAY, '[flag|f] arrrrrrgs', null),)
-			)
-		->setHelp('This is a magical help section...');
+			->setDescription('This says hello to the world')
+			->setDefinition(array(
+				new InputOption(
+					'flag',
+					'f',
+					InputOption::VALUE_NONE,
+					'We are setting a flag'
+				),
+				new InputArgument(
+					'args',
+					InputArgument::IS_ARRAY,
+					'[flag|f] arrrrrrgs',
+					null
+				)
+			))
+			->setHelp('This is a magical help section...');
 	}
-	protected function execute(InputInterface $input, OutputInterface $output){
+	protected function execute(InputInterface $input, OutputInterface $output)
+	{
 		$arg = $input->getArgument('args');
 		if ($input->getOption('flag')) {
 			$text = "Flag Set.";
@@ -27,6 +40,8 @@ class Helloworld extends Command {
 			$text = "No Flag Set";
 		}
 		$output->writeln($text);
-		if($arg){ print_r($arg);}
+		if ($arg) {
+			print_r($arg);
+		}
 	}
 }
