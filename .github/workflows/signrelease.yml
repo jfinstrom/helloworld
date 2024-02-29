@@ -1,0 +1,55 @@
+name: Sign and Release Module
+
+on:
+  push:
+    branches:
+      - 'release/*'
+      - 'bugfix/*'
+      - 'feature/*'
+
+jobs:
+  sign_and_release_module:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          path : ${{ github.event.repository.name }}
+
+      - name: Install GPG
+        run: sudo apt-get update && sudo apt-get install gnupg xmlstarlet -y
+
+      - name: Import GPG key
+        run: echo "${{ secrets.GPG_SIGNING_KEY }}" | base64 --decode | gpg --import
+
+      - name: Extract version and rawname from module.xml
+        id: extract_info
+        run: |
+           version=$(awk -F'[><]' '/<version>/{print $3; exit}' ./${{ github.event.repository.name }}/module.xml)
+           rawname=$(awk -F'[><]' '/<rawname>/{print $3; exit}' ./${{ github.event.repository.name }}/module.xml)
+           echo "MODULE_VERSION=$version" >> $GITHUB_ENV
+           echo "MODULE_RAWNAME=$rawname" >> $GITHUB_ENV
+
+      # Assuming your module build/packaging places the file and signing script in the working directory
+      - name: Sign module
+        run: |
+         chmod +x ./${{ github.event.repository.name }}/.github/workflows/sign.sh
+         ./${{ github.event.repository.name }}/.github/workflows/sign.sh ${{env.MODULE_RAWNAME}} "${{ secrets.GPG_SIGNING_KEY }}" ./${{ github.event.repository.name }}/.github/workflows/exclude.txt
+
+      - name: Push signed module to releases
+        if: startsWith(github.ref, 'refs/heads/release/') || startsWith(github.ref, 'refs/heads/bugfix/') || startsWith(github.ref, 'refs/heads/feature/')
+        uses: softprops/action-gh-release@4634c16e79c963813287e889244c50009e7f0981
+        env:
+          IS_RELEASE_BRANCH: ${{ startsWith(github.ref_name, 'release') }}
+          IS_BUGFIX_BRANCH: ${{ startsWith(github.ref_name, 'bugfix') }}
+          IS_FEATURE_BRANCH: ${{ startsWith(github.ref_name, 'feature') }}
+        with:
+          files: ${{env.MODULE_RAWNAME}}-${{env.MODULE_VERSION}}.tar.gz
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: v${{env.MODULE_VERSION}}
+          name: |
+            ${{ env.IS_RELEASE_BRANCH && format('Release {0}', env.MODULE_VERSION) }}
+            ${{ env.IS_BUGFIX_BRANCH && format('Bugfix Release {0}', env.MODULE_VERSION) }}
+            ${{ env.IS_FEATURE_BRANCH && format('Feature Release {0}', env.MODULE_VERSION) }}
+          prerelease: ${{ env.IS_BUGFIX_BRANCH || env.IS_FEATURE_BRANCH }}

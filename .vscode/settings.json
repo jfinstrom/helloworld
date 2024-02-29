@@ -36,6 +36,6 @@
 	"intelephense.diagnostics.undefinedMethods": false,
 	"intelephense.diagnostics.undefinedProperties": false,
 	"editor.codeActionsOnSave": {
-		"source.fixAll.eslint": true
+		"source.fixAll.eslint": "explicit"
 	}
 }
