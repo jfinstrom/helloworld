@@ -2,12 +2,19 @@
 	<rawname>helloworld</rawname>
 	<repo>unsupported</repo>
 	<name>Hello World</name>
-	<version>14.0.1</version>
+	<version>15.0.1</version>
 	<category>Development</category>
 	<Publisher>James Finstrom</Publisher>
 	<info>http://wiki.freepbx.org/pages/viewpage.action?pageId=19498386</info>
 	<licence>GPL</licence>
 	<licenselink>http://www.gnu.org/licenses/gpl-2.0.txt</licenselink>
+	<database>
+        	<table name="helloworld">
+            		<field name="id" type="integer" primarykey="true" autoincrement="true"/>
+            		<field name="subject" type="string" length="150" notnull="false"/>
+            		<field name="body" type="string" length="255" notnull="false"/>
+        	</table>
+    	</database>
 	<menuitems>
 		<helloworld>Hello World</helloworld>
 	</menuitems>
